@@ -31,9 +31,9 @@ Building instructions
 Make sure you have `node` installed, and from the repository root, run:
 
 ```bash
-./build.sh
+npm run build
 ```
-This will create two extensions in the dist folder, one for Firefox and one for Chrome.
+For now, this will compile all typescript assets into javascript bundles in the production/ folder as well copying the frontends and minifying everything.
  
 -----------
 
