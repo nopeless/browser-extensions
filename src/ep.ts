@@ -1,7 +1,9 @@
 import { HTTPError } from './exceptions/HTTPError';
 import * as tosdr from './index';
 
-
+/**
+ * The function that initializes the extension 
+*/
 async function init() {
     try {
         let services = await tosdr.APIManager.getAllServices();

@@ -11,7 +11,7 @@ export class APIManager {
 
     public static async getAllServices(): Promise<all_services> {
 
-        let uri = this.PROTO + '://' + this.ENDPOINT + '/all-sservices/v1/';
+        let uri = this.PROTO + '://' + this.ENDPOINT + '/all-services/v1/';
 
         LoggingManager.debug("APIManager:getAllServices", "Making a request to:", uri);
 
