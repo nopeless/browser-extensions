@@ -1,11 +1,20 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
+const webpack = require('webpack');
+const glob = require("glob");
 module.exports = {
-    entry: './src/index.ts',
-
+    entry: {
+        tosdr: './src/index.ts',
+        stylesheet: glob.sync("./src/assets/css/*.css"),
+        scripts: glob.sync("./src/assets/js/*.js"),
+    },
     plugins: [
-        new MiniCssExtractPlugin()
+        new MiniCssExtractPlugin({
+            filename: '[name].min.css'
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ],
     devtool: 'inline-source-map',
     module: {
@@ -25,7 +34,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'bundle.min.js',
+        filename: '[name].min.js',
         path: path.resolve(__dirname, 'production/assets'),
     },
 };

@@ -8,6 +8,9 @@ module.exports = function (grunt) {
                 dot: true,
                 src: ["production/**/*"]
             },
+            cleanup: {
+                src: ["production/assets/stylesheet.min.js"]
+            },
         },
         webpack: {
             prod: webpackConfig,
@@ -43,11 +46,22 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+        uglify: {
+            default: {
+                files: [{
+                    expand: true,
+                    cwd: 'production/assets',
+                    src: '**/*.js',
+                    dest: 'production/assets'
+                }]
+            }
         }
     });
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks("grunt-webpack-5");
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks("grunt-contrib-compress");
-    grunt.registerTask('default', ['clean', 'webpack', 'copy:default']);
+    grunt.registerTask('default', ['clean:default', 'webpack', 'copy:default', 'uglify:default', 'clean:cleanup']);
 };
