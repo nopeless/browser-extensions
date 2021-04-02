@@ -2,11 +2,6 @@ kind: pipeline
 name: default
 
 steps:
-- name: test
-  image: node
-  commands:
-  - npm install
-  - npm run lint
 
 - name: Up Version
   image: node:alpine
@@ -18,7 +13,6 @@ steps:
   - cat src/manifest.json | sed '/"version":/ s/"version":[^,]*/"version":"'$(npm run env | grep npm_package_version | cut -d '=' -f 2)'"/' > src/manifest.json
   - git add . && git commit -m "Update manifest version"
   - git tag $(npm run env | grep npm_package_version | cut -d '=' -f 2) -a -m "Updated to $(npm run env | grep npm_package_version | cut -d '=' -f 2)"
-  - sed -i 's/\r$//' build.sh
   when:
     event:
     - promote
@@ -45,10 +39,10 @@ steps:
     - major
 
 - name: Build Extension
-  image: node:alpine
+  image: node
   commands:
-  - apk --no-cache add zip bash
-  - bash build.sh
+  - npm install
+  - npm run build
 
 - name: Sign Release  
   image: plugins/gpgsign
@@ -58,7 +52,7 @@ steps:
     passphrase:
         from_secret: SIGN_KEY_PASS
     files:
-      - dist/*
+      - production/*
   when:
       branch:
       - master
@@ -69,7 +63,7 @@ steps:
   image: plugins/s3
   settings:
     bucket: tosdr-artifacts
-    source: ./dist/*
+    source: ./production/*
     strip_prefix: true
     access_key:
       from_secret: aws_access_key_id
@@ -121,7 +115,7 @@ steps:
     api_key:
       from_secret: RELEASE_TOKEN
     files:
-    - dist/*
+    - production/*
     checksum:
     - sha256
   when:
@@ -132,7 +126,7 @@ steps:
   image: plugins/s3
   settings:
     bucket: tosdr-artifacts
-    source: ./dist/*
+    source: ./production/*
     access_key:
       from_secret: aws_access_key_id
     secret_key:
