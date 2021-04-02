@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES6",
     "target": "ES6",
+    "lib": [ "DOM", "ES2016" ],
     "noImplicitAny": true,
+    "moduleResolution": "Node",
     "removeComments": true,
     "preserveConstEnums": true,
     "outDir": "production/",

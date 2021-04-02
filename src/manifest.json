@@ -6,15 +6,12 @@
   "homepage_url": "https://tosdr.org",
   "background": {
     "scripts": [
-      "polyfill.min.js",
-      "utils.js",
-      "popup/js/jquery-3.2.1.min.js",
-      "popup/js/servicedata.js",
-      "background.js"
+      "assets/tosdr.min.js",
+      "assets/scripts.min.js"
     ]
   },
   "options_ui": {
-    "page": "settings/settings.html"
+    "page": "settings.html"
   },
   "page_action": {
     "default_icon": {

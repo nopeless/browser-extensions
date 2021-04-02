@@ -23,6 +23,13 @@ module.exports = function (grunt) {
                         nonull: true,
                         src: 'src/manifest.json',
                         dest: 'production/manifest.json',
+                    },
+                    {
+                        nonull: true,
+                        expand: true,
+                        src: '**',
+                        cwd: 'src/_locales/',
+                        dest: 'production/_locales/',
                     }, {
                         nonull: true,
                         src: 'src/frontend/popup/index.html',
