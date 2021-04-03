@@ -15,6 +15,10 @@ module.exports = {
         new webpack.ProvidePlugin({
             process: 'process/browser',
         }),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery'
+        })
     ],
     devtool: 'inline-source-map',
     module: {

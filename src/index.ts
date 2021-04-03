@@ -1,4 +1,5 @@
 import 'ts-polyfill';
+import 'jquery';
 
 /* Classes */
 export * from './classes/API';

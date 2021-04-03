@@ -67,11 +67,80 @@ function checkNotification(service: any) {
 }
 
 
+function loading(load: boolean) {
+    var x = document.getElementsByClassName("loading")[0] as HTMLElement;
+    if (load) {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+
+function escapeHTML(unsafe: string) {
+    return (`${unsafe}`)
+        .replace(/&(?!amp;)/g, '&amp;')
+        .replace(/<(?!lt;)/g, '&lt;')
+        .replace(/>(?!gt;)/g, '&gt;')
+        .replace(/"(?!quot;)/g, '&quot;')
+        .replace(/'(?!#039;)/g, '&#039;');
+}
+
+
+function tosdrPoint(service: any, dataPoint: any) {
+    let badge;
+    let icon;
+    // let sign;
+    if (dataPoint) {
+        if (dataPoint.case.classification === 'good') {
+            badge = 'badge-success';
+            icon = 'thumbs-up';
+            // sign = '+';
+        } else if (dataPoint.case.classification === 'bad') {
+            badge = 'badge-warning';
+            icon = 'thumbs-down';
+            // sign = '-';
+        } else if (dataPoint.case.classification === 'blocker') {
+            badge = 'badge-important';
+            icon = 'times';
+            // sign = '×';
+        } else if (dataPoint.case.classification === 'neutral') {
+            badge = 'badge-secondary';
+            icon = 'asterisk';
+            // sign = '→';
+        } else {
+            badge = '';
+            icon = 'question';
+            // sign = '?';
+        }
+        const pointText = dataPoint.title || '';
+
+        // Extract links from text
+        const taggedText = pointText.split(/(<\/?\w+(?:(?:\s+\w+(?:\s*=\s*(?:".*?"|'.*?'|[^'">\s]+))?)+\s*|\s*)\/?>)/gim);
+        $(`#popup-point-${service.id}-${dataPoint.id}`)
+            .append($('<div>', { class: dataPoint.case.classification })
+                .append($('<h5>')
+                    .append($('<span>', { class: `badge ${badge}`, title: escapeHTML(dataPoint.case.classification) })
+                        .append($('<li>', { class: `fas fa-${icon}` })))
+                    .append($('<a>', {
+                        href: escapeHTML(dataPoint.discussion), target: '_blank', class: 'ml-2', text: dataPoint.title,
+                    }))));
+
+        $(`#popup-point-${service.id}-${dataPoint.id}`).append($('<p>'));
+        if (taggedText.length > 1) {
+            taggedText.forEach((t: any) => {
+                $(`#popup-point-${service.id}-${dataPoint.id} p`).append(t);
+            });
+        } else {
+            $(`#popup-point-${service.id}-${dataPoint.id} p`).text(pointText);
+        }
+    }
+}
 
 document.addEventListener("tosdr-popup-loaded", async function (e: any) {
     LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded", "Popup loaded, wohoo");
     const serviceUrl = window.location.hash.substr(1);
 
+    loading(true);
     /* Close Logic */
 
     let closeButtons = document.getElementsByClassName("close");
@@ -82,9 +151,15 @@ document.addEventListener("tosdr-popup-loaded", async function (e: any) {
     }
 
     DomainManager.getLiveServiceDetails(serviceUrl).then((service) => {
-        LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded:getLiveServiceDetails", service);
+        LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded:getLiveServiceDetails", service.parameters);
 
+        service.parameters.points.forEach((p: any) => {
+            LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded:points", p);
+            $('.tosdr-points').append($('<li>', { id: `popup-point-${service.id}-${p}`, class: 'point' }));
+            tosdrPoint(service, p);
+        });
 
+        loading(false);
 
 
     });
@@ -109,12 +184,6 @@ function initializePageAction(tab: any) {
             });
             browser.pageAction.show(tab.id);
             checkNotification(service);
-            window.addEventListener("load", function () {
-                alert("let's go!");
-
-            }, false);
-
-
         } else {
             browser.pageAction.setIcon({
                 tabId: tab.id,
