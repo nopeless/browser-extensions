@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { APIManager } from './API';
 import { LoggingManager } from './Logging';
 import { StorageManager } from './Storage';
 
@@ -32,6 +33,19 @@ export class DomainManager {
         const domain = this.getDomain(tab.url);
         LoggingManager.debug("DomainManager:getService", "Getting service details from domain", domain);
         return StorageManager.getServiceDetails(domain);
+    }
+
+    public static getLiveServiceDetails(domain: any, tries = 0): Promise<any> {
+        if (!domain) {
+            return Promise.reject(new Error('no domain name provided'));
+        }
+        if (tries > 10) {
+            return Promise.reject(new Error(`too many redirections ${domain}`));
+        }
+
+        return StorageManager.getDomainEntryFromStorage(domain).then((details: any) => {
+            return APIManager.getService(details.id).then(data => Object.assign({ mainDomain: domain }, data));
+        });
     }
 
 

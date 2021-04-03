@@ -1,3 +1,4 @@
+import { APIManager } from './classes/API';
 import { DomainManager } from './classes/Domain';
 import { LoggingManager } from './classes/Logging';
 import { HTTPError } from './exceptions/HTTPError';
@@ -71,7 +72,23 @@ document.addEventListener("tosdr-popup-loaded", async function (e: any) {
     LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded", "Popup loaded, wohoo");
     const serviceUrl = window.location.hash.substr(1);
 
-    alert(serviceUrl);
+    /* Close Logic */
+
+    let closeButtons = document.getElementsByClassName("close");
+    for (var i = 0; i < closeButtons.length; i++) {
+        closeButtons[i].addEventListener('click', function () {
+            window.close();
+        }, false);
+    }
+
+    DomainManager.getLiveServiceDetails(serviceUrl).then((service) => {
+        LoggingManager.debug("ep:addEventListener->tosdr-popup-loaded:getLiveServiceDetails", service);
+
+
+
+
+    });
+
 });
 
 
@@ -96,7 +113,7 @@ function initializePageAction(tab: any) {
                 alert("let's go!");
 
             }, false);
-            
+
 
         } else {
             browser.pageAction.setIcon({
