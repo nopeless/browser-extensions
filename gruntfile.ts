@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         clean: {
             default: {
                 dot: true,
-                src: ["production/**/*"]
+                src: ["production/**/*", "dist/**/*"]
             },
             cleanup: {
                 src: ["production/assets/stylesheet.min.js"]
@@ -30,6 +30,13 @@ module.exports = function (grunt) {
                         src: '**',
                         cwd: 'src/_locales/',
                         dest: 'production/_locales/',
+                    },
+                    {
+                        nonull: true,
+                        expand: true,
+                        src: '**',
+                        cwd: 'src/assets/images/',
+                        dest: 'production/assets/images/',
                     }, {
                         nonull: true,
                         src: 'src/frontend/popup/index.html',
@@ -39,9 +46,23 @@ module.exports = function (grunt) {
             }
         },
         compress: {
-            default: {
+            chrome: {
                 options: {
-                    archive: 'dist/<%= pkg.version %>.zip',
+                    archive: 'dist/chrome.zip',
+                    mode: 'zip'
+                },
+                files: [
+                    {
+                        dot: true,
+                        src: '**/*',
+                        expand: true,
+                        cwd: 'production/'
+                    }
+                ]
+            },
+            firefox: {
+                options: {
+                    archive: 'dist/firefox.xpi',
                     mode: 'zip'
                 },
                 files: [
@@ -70,5 +91,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks("grunt-contrib-compress");
-    grunt.registerTask('default', ['clean:default', 'webpack', 'copy:default', 'uglify:default', 'clean:cleanup']);
+    grunt.registerTask('default', ['clean:default', 'webpack', 'copy:default', 'uglify:default', 'clean:cleanup', 'compress']);
 };
